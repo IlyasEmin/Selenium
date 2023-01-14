@@ -1,6 +1,7 @@
 package utilities;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.openqa.selenium.*;
@@ -11,8 +12,12 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public abstract class TestBase {
@@ -142,7 +147,7 @@ public abstract class TestBase {
         return wait.until(ExpectedConditions.elementToBeClickable(locator));
     }
 
-
+    //COK KULLANILMAZ
     public static void clickWithTimeOut(WebElement element, int timeout) {
         for (int i = 0; i < timeout; i++) {
             try {
@@ -154,7 +159,7 @@ public abstract class TestBase {
         }
     }
 
-    //    This can be used when a new page opens
+    //    This can be used when a new page opens. Yeni sagfaya gecislerde kullanilabilir
     public static void waitForPageToLoad(long timeout) {
         ExpectedCondition<Boolean> expectation = new ExpectedCondition<Boolean>() {
             public Boolean apply(WebDriver driver) {
@@ -171,7 +176,6 @@ public abstract class TestBase {
         }
     }
 
-
     //======Fluent Wait====
     // params : xpath of teh element , max timeout in seconds, polling in second
     public static WebElement fluentWait(String xpath, int withTimeout, int pollingEvery) {
@@ -186,10 +190,34 @@ public abstract class TestBase {
         return element;
     }
 
+    //   SCREENSHOTS
+    public void takeScreenShotOfPage() throws IOException {
+//        1. Take screenshot
+        File image = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
 
+//       2. Save screenshot
+//        getting the current time as string to use in teh screenshot name, previous screenshots will be kept
+        String currentTime = new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
 
+//        Path of screenshot save folder               folder / folder    /file name
+        String path = System.getProperty("user.dir")+"/test-output/Screenshots/"+currentTime+"image.png";
+        FileUtils.copyFile(image,new File(path));
+    }
 
+    //    SCREENSHOT
+//    @params: WebElement
+//
+    public void takeScreenshotOfElement(WebElement element) throws IOException {
+//        1. take screenshot
+        File image = element.getScreenshotAs(OutputType.FILE);
+//        2. save screenshot
+//        path
+        String currentTime = new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
+        String path = System.getProperty("user.dir")+"/test-output/Screenshots/"+currentTime+"image.png";
+        FileUtils.copyFile(image,new File(path));
+    }
 
 
 }
+
 
